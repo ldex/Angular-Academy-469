@@ -1,0 +1,39 @@
+<h2>
+    {{ title() }}
+</h2>
+
+@if (errorMessage(); as error) {
+    <div class="errorMessage">{{ error }}</div>
+}
+@else if (isLoading()) {
+    <div class="loading"></div>
+} @else {
+
+    <div>
+        {{ products().length }} products
+    </div>
+
+    <ul class="products">
+        @for (product of products() | orderBy:['-modifiedDate'] | slice:start():end(); track product.id) {
+            <li [class.discontinued]="product.discontinued"
+                [class.selected]="product.id == selectedProduct()?.id"
+                (click)="select(product)">
+                <span class="name">{{ product.name | uppercase }}</span>
+                <span class="description">{{ product.description }}</span>
+                <span class="price">{{ product.price | currency:'CAD':'symbol':'.1' }}</span>
+            </li>
+        }
+    </ul>
+
+    <div>
+        <button (click)="changePage(-1)" [disabled]="pageNumber() == 1">
+            Previous Page
+        </button>
+        Page {{ pageNumber() }}
+        <button (click)="changePage(1)" [disabled]="products().length <= end()">
+            Next Page
+        </button>
+    </div>
+
+    <app-product-details [product]="selectedProduct()"></app-product-details>
+}
