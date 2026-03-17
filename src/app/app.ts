@@ -1,10 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ProductList } from "./products/product-list/product-list";
+import { RouterOutlet, RouterLinkWithHref, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ProductList],
+  imports: [RouterOutlet, RouterLinkWithHref, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

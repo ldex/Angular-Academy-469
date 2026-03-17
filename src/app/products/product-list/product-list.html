@@ -25,6 +25,10 @@
         }
     </ul>
 
+    <div class="right">
+        <a routerLink="create">Create new product...</a>
+    </div>
+
     <div>
         <button (click)="changePage(-1)" [disabled]="pageNumber() == 1">
             Previous Page
@@ -34,6 +38,4 @@
             Next Page
         </button>
     </div>
-
-    <app-product-details [product]="selectedProduct()"></app-product-details>
 }

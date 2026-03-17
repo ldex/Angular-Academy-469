@@ -1,18 +1,19 @@
 import { Component, inject, Signal, signal } from '@angular/core';
 import { Product } from '../../models/product';
 import { CurrencyPipe, SlicePipe, UpperCasePipe } from '@angular/common';
-import { ProductDetails } from '../product-details/product-details';
 import { ProductService } from '../product-service';
 import { OrderByPipe } from '../orderBy.pipe';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-product-list',
-  imports: [UpperCasePipe, CurrencyPipe, ProductDetails, OrderByPipe, SlicePipe],
+  imports: [UpperCasePipe, CurrencyPipe, OrderByPipe, SlicePipe, RouterLink],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
 })
-export class ProductList {
+export default class ProductList {
   private productService = inject(ProductService)
+  private router = inject(Router)
 
   // Pagination
   pageSize = signal(5)
@@ -35,6 +36,7 @@ export class ProductList {
 
   select(product: Product): void {
     this.selectedProduct.set(product)
+    this.router.navigate(['/products', product.id])
   }
 
   title = signal('Products')

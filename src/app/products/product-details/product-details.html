@@ -2,7 +2,11 @@
     Selected product
 </h2>
 
-@if (product(); as product) {
+@if (error(); as error) {
+    <div class="errorMessage">{{ error }}</div>
+} @else if(isLoading()) {
+    <div class="loading"></div>
+} @else if (product(); as product) {
     <div>
         <h3>{{product.name | uppercase}}</h3>
         @if (product.imageUrl) {
@@ -14,6 +18,17 @@
         <p>Discontinued? {{product.discontinued}}</p>
         <p>Modified date:
             {{product.modifiedDate | date}}</p>
+
+        <button (click)="confirm.showModal()">Delete Product</button>
+        <dialog #confirm>
+          <p>Delete this product ?</p>
+          <div class="right">
+            <button (click)="deleteProduct()" autofocus>Ok</button>
+            &nbsp;
+            <button (click)="confirm.close()">Cancel</button>
+          </div>
+        </dialog>
+
     </div>
 } @else {
     <h3>No product to display!</h3>

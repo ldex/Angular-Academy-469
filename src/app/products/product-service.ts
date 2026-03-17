@@ -9,7 +9,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ProductService {
 
   private apiService = inject(ApiService)
+
   private products = signal<Product[]>([]);
+  private selectedProduct = signal<Product>(undefined);
 
   private error = signal<string>(undefined);
   errorMessage = this.error.asReadonly();
@@ -43,8 +45,62 @@ export class ProductService {
   }
 
   getProducts(): Signal<Product[]> {
-    this.loadProducts()
+    if(this.products().length == 0)
+      this.loadProducts()
+
     return this.products.asReadonly()
+  }
+
+  getProductById(id: number): Signal<Product> {
+    const product = this.products().find((p) => p.id === id);
+
+    if (!product) {
+      this.loadProduct(id);
+    } else {
+      this.selectedProduct.set(product);
+    }
+
+    return this.selectedProduct.asReadonly();
+  }
+
+  private loadProduct(id: number): void {
+    this.loading.set(true);
+    this.apiService.loadProduct(id).subscribe({
+      next: (product) => {
+        this.loading.set(false);
+        this.selectedProduct.set(product);
+      },
+      error: (err) => this.handleError(err, 'Failed to load product.'),
+    });
+  }
+
+  createProduct(newProduct: Omit<Product, 'id'>): Promise<void> {
+    this.apiService.createProduct(newProduct).subscribe({
+      next: (product) => {
+        this.products.update((products) => [...products, product]);
+        console.log('Product saved on the server with id: ' + product.id);
+      },
+      error: (error) => {
+        this.handleError(error, 'Failed to save product.');
+        return Promise.reject();
+      },
+    });
+    return Promise.resolve();
+  }
+
+  deleteProduct(id: number): Promise<void>  {
+    this.apiService.deleteProduct(id).subscribe({
+      next: () => {
+        this.products.update(products => products.filter(p => p.id !== id));
+        console.log('Product deleted');
+      },
+      error: (error) => {
+         this.handleError(error, 'Failed to delete product.')
+         return Promise.reject();
+      }
+    });
+
+    return Promise.resolve();
   }
 
 }
